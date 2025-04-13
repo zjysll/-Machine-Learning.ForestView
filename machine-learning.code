@@ -1,1 +1,69 @@
+本来是应该用随机森林模型模拟农田环境驱动因子如pH，温度，有机碳，含水率等对潜在反硝化速率以及氧化亚氮排放数据，对相关驱动因子的feature important进行分析。
+但是由于数据不够理想，模拟效果还不如线性模拟，因此加载加利福尼亚房价数据，对过程进行模拟，每个部分的具体作用及代码解释如下。
 
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+
+# 1. 加载加利福尼亚房价数据集
+data = fetch_california_housing()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df["Target"] = data.target * 100000  # 转换单位（单位：美元）
+
+# 2. 数据可视化
+plt.figure(figsize=(12, 6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Feature Correlation Heatmap")
+plt.show()
+
+# 3. 数据拆分
+X = df.drop(columns=["Target"])
+y = df["Target"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 4. 训练随机森林回归模型
+rf = RandomForestRegressor(n_estimators=100, random_state=42)
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+
+# 5. 评估模型
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print(f"Mean Squared Error: {mse:.2f}")
+print(f"R² Score: {r2:.2f}")
+
+# 6. 结果可视化
+plt.figure(figsize=(10, 5))
+plt.scatter(y_test, y_pred, alpha=0.7, color='b')
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], '--r')
+plt.xlabel("True Prices ($)")
+plt.ylabel("Predicted Prices ($)")
+plt.title("Actual vs. Predicted Prices")
+plt.show()
+
+# 7. 超参数优化
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [None, 10, 20],
+    "min_samples_split": [2, 5, 10]
+}
+grid_search = GridSearchCV(RandomForestRegressor(random_state=42), param_grid, cv=5, scoring="r2", n_jobs=-1)
+grid_search.fit(X_train, y_train)
+
+# 8. 使用最佳参数重新训练
+best_rf = grid_search.best_estimator_
+best_rf.fit(X_train, y_train)
+y_pred_best = best_rf.predict(X_test)
+
+# 9. 评估优化后模型
+mse_best = mean_squared_error(y_test, y_pred_best)
+r2_best = r2_score(y_test, y_pred_best)
+print(f"Optimized MSE: {mse_best:.2f}")
+print(f"Optimized R²: {r2_best:.2f}")
