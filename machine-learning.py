@@ -3,7 +3,7 @@
 郑鑫、刘英杰、黄梦甜、祝婧怡构造运营环境，下载nump包、pandas包时用到了Anconda prompt
 郑鑫进行代码复刻时用到了Vs code
 祝婧怡、黄梦甜、刘英杰在编码实现过程中，通过人工智能驱动的方法论，借助AI软件如DeepSeek、python等对多维数据进行建模与特征解析，并采用特征重要性量化分析框架实现驱动因子的动态权重评估。
-
+#库
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
