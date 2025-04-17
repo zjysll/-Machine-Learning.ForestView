@@ -24,6 +24,7 @@ X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
 
 # 输出数据集基本信息
+# 相应代码如下：
 print("数据集特征形状: ", X.shape)
 print("数据集标签分布:\n", y.value_counts())
 
