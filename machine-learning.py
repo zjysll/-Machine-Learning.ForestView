@@ -18,6 +18,7 @@ from sklearn.preprocessing import StandardScaler
 
 # 1. 数据加载与预处理
 # 载入乳腺癌数据集，该数据集包含 569 个样本，每个样本有 30 个特征和二分类标签（良性/恶性）
+# 其中load_breast_cancer()是加载乳腺癌数据集
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
