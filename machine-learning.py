@@ -1,8 +1,8 @@
 本研究旨在基于随机森林算法构建环境驱动因子解析模型，重点探讨土壤pH值、温度梯度、有机碳含量及含水率等关键参数对反硝化作用动力学特征（以潜在反硝化速率为表征）以及氧化亚氮（N2O）排放通量的影响机制，对相关驱动因子的feature important进行分析
 鉴于原始农业环境数据存在异质性较高、信噪比不足等局限性，导致非线性模型的预测效能未能显著优于传统线性回归方法，本研究转而采用scikit-learn机器学习库中的乳腺癌数据集进行方法学验证。该替代数据集可有效模拟多变量交互作用下的特征解析过程，后续将系统阐述各算法组件的功能实现及其生态学意义解析方法。
-郑鑫、祝婧怡、刘英杰、黄梦甜构造运营环境，下载nump包、pandas包时用到了Anconda prompt
+郑鑫、刘英杰、黄梦甜、祝婧怡构造运营环境，下载nump包、pandas包时用到了Anconda prompt
 郑鑫进行代码复刻时用到了Vs code
-祝婧怡、刘英杰、黄梦甜在编码实现过程中，通过人工智能驱动的方法论，借助AI软件如DeepSeek、python等对多维数据进行建模与特征解析，并采用特征重要性量化分析框架实现驱动因子的动态权重评估。
+祝婧怡、黄梦甜、刘英杰在编码实现过程中，通过人工智能驱动的方法论，借助AI软件如DeepSeek、python等对多维数据进行建模与特征解析，并采用特征重要性量化分析框架实现驱动因子的动态权重评估。
 
 import numpy as np
 import pandas as pd
@@ -146,7 +146,14 @@ plt.show()
 # 8. ROC 曲线与 AUC 分数评估
 # 计算 ROC 曲线，并绘制 ROC 曲线图，评估模型分类效果
 y_proba = best_rf.predict_proba(X_test)[:, 1]  # 获取正例概率
+#作用：获取测试集中每个样本属于正类（标签为1）的概率
+#predict_proba() 返回一个二维数组，每行对应一个样本，列表示属于类别0和1的概率
+#[:, 1] 提取所有行（样本）的第二列，即预测为正类的概率
+#意义：ROC曲线的绘制需要基于概率值，而非直接预测的类别标签
 fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+#输入：y_test：测试集的真实标签（0或1）；y_proba：模型预测的正类概率
+#输出：fpr（False Positive Rate）：假阳性率（误判负类为正类的比例）；tpr（True Positive Rate）：真阳性率（正确识别正类的比例，即召回率）；thresholds：生成不同FPR/TPR时使用的概率阈值（从高到低排序）
+#原理：通过动态调整分类阈值（默认0.5），计算不同阈值下的FPR和TPR
 roc_auc = auc(fpr, tpr)
 print("\nOptimized Model ROC AUC: {:.4f}".format(roc_auc))
 
