@@ -6,12 +6,22 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+导入 NumPy 库（用于科学计算），并简写为 np以提供高效的数组（ndarray）操作、数学函数、线性代数等
+导入 Pandas 库（用于数据分析），并简写为 pd以提供 DataFrame（类似Excel表格的数据结构），支持数据清洗、统计分析等
+导入 Matplotlib 的绘图模块，并简写为 plt以基础绘图库，可生成折线图、散点图、直方图等
+导入 Seaborn 库（基于Matplotlib），并简写为 sns以提供更美观的统计图表（如热力图、箱线图），简化复杂可视化
 
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc, roc_auc_score
 from sklearn.preprocessing import StandardScaler
+这段代码导入了 scikit-learn（sklearn） 库中的多个模块和函数，主要用于 机器学习建模、数据预处理、模型评估 等任务。以下是逐行解释：
+从 sklearn.datasets 加载 乳腺癌数据集（Breast Cancer Wisconsin Dataset），数据集内容包含肿瘤特征（如半径、纹理等）和对应的标签（良性 0 / 恶性 1）
+train_test_split：将数据集随机划分为训练集 和测试集，GridSearchCV：通过网格搜索进行超参数调优（穷举所有参数组合，选择最佳模型），cross_val_score：使用 交叉验证 评估模型性能（如准确率）
+导入随机森林算法
+confusion_matrix：生成混淆矩阵（显示真阳性、假阳性等分类结果），classification_report：输出分类报告（精确度、召回率、F1值等），roc_curve 和 auc：绘制ROC曲线并计算曲线下面积（AUC），评估模型区分能力，roc_auc_score：直接计算AUC得分（值越接近1，模型越好）。
+对数据进行 标准化（均值为0，方差为1），提升模型稳定性
 
 
 # 1. 数据加载与预处理
@@ -19,10 +29,15 @@ from sklearn.preprocessing import StandardScaler
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
+这段代码主要用于加载和预处理Scikit-learn内置的乳腺癌数据集，以下是逐行解释：
+加载Scikit-learn内置的威斯康星乳腺癌诊断数据集
+将特征数据转换为Pandas DataFrame
+将目标变量转换为Pandas Series
 
 # 输出数据集基本信息
 print("数据集特征形状: ", X.shape)
 print("数据集标签分布:\n", y.value_counts())
+
 
 # 数据预处理：标准化特征数据
 scaler = StandardScaler()
