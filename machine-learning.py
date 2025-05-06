@@ -94,6 +94,7 @@ param_grid = {
     'min_samples_leaf': [1, 2, 4],
     'bootstrap': [True, False]
 }
+#这段代码定义了一个参数网格，用于在超参数调优过程中尝试不同的超参数组合，以找到最佳的模型性能。n_estimators 和 max_depth 的组合可以控制模型的复杂度。min_samples_split 和 min_samples_leaf 的组合可以控制树的分裂严格程度。bootstrap 决定了树的构建方式。这些参数的组合会影响模型的性能和计算成本。通过工具可以自动尝试所有可能的组合，找到最优的超参数。
 
 # 采用 5 折交叉验证
 grid_search = GridSearchCV(estimator=RandomForestClassifier(random_state=42),
@@ -102,9 +103,10 @@ grid_search = GridSearchCV(estimator=RandomForestClassifier(random_state=42),
                            n_jobs=-1,
                            verbose=1,
                            scoring='accuracy')
-
+#使用 GridSearchCV 对 RandomForestClassifier 模型进行超参数调优，遍历 param_grid 中的所有超参数组合，使用 5 折交叉验证评估每组超参数的性能，并行计算以加速调优过程，输出日志信息以便跟踪进度。最终选择使准确率（accuracy）最高的超参数组合。
 # 训练调优
 grid_search.fit(X_train, y_train)
+#是启动超参数调优和模型训练的核心代码。它通过交叉验证和穷举搜索找到最佳超参数组合，并训练出最终的模型。通过这种方式，可以显著提升模型的性能和泛化能力。
 
 # 输出最佳超参数及最佳得分
 print("\nBest Parameters:", grid_search.best_params_)
@@ -114,11 +116,13 @@ print("Best CV Accuracy: {:.4f}".format(grid_search.best_score_))
 best_rf = grid_search.best_estimator_
 best_rf.fit(X_train, y_train)
 y_pred_best = best_rf.predict(X_test)
+#利用网格搜索找到最佳的随机森林模型，并使用该模型对测试数据进行预测。通过合理地设置参数网格和评估指标，可以有效地优化模型的性能。
 
 # 输出优化后模型的分类报告和混淆矩阵
 print("\nOptimized Model Classification Report:\n", classification_report(y_test, y_pred_best))
 cm_best = confusion_matrix(y_test, y_pred_best)
 print("Optimized Confusion Matrix:\n", cm_best)
+#这段代码用于在分类任务中评估机器学习模型的性能。它输出了分类报告（classification report）和混淆矩阵（confusion matrix），这些是常用的评估指标，用于了解模型在测试数据上的表现。
 
 # 可视化优化后模型的混淆矩阵
 plt.figure(figsize=(6, 5))
@@ -128,6 +132,7 @@ plt.xlabel("Predicted Label", fontsize=14)
 plt.ylabel("True Label", fontsize=14)
 plt.tight_layout()
 plt.show()
+#使用了 matplotlib 和 seaborn 库来可视化混淆矩阵（cm_best），使其更直观易读。plt.tight_layout: 自动调整子图参数，以确保子图之间有足够的空间，避免标签或标题重叠。这在绘制复杂图形时非常有用。
 
 # 7. 模型的重要性分析（Feature Importance）
 # 随机森林模型可以计算各个特征的重要性，下面绘制特征重要性图，帮助理解哪些特征对分类任务贡献最大
