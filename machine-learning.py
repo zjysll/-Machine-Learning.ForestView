@@ -83,13 +83,17 @@ print("测试集样本数: ", X_test.shape[0])
 # 4. 构建基础随机森林分类器
 # 初步构建随机森林模型，并进行训练和预测
 rf = RandomForestClassifier(random_state=42)
+#random_state=42: 设置随机种子为42。随机森林算法在训练过程中会使用随机性，通过设置 random_state 参数，可以确保每次运行代码时生成的随机数相同，从而保证结果的可重复性。
 rf.fit(X_train, y_train)
+#rf.fit(X_train, y_train)的作用是使用训练数据 X_train 和 y_train 来训练随机森林模型。训练过程中，随机森林会构建多棵决策树，并通过集成这些树的预测结果来提高模型的准确性和稳定性
 y_pred = rf.predict(X_test)
+#y_pred = rf.predict(X_test)的作用是使用训练好的随机森林模型 rf 对测试数据 X_test 进行预测，并将预测结果存储在变量 y_pred 中。
 
 # 输出分类报告和混淆矩阵
 print("\nInitial Model Classification Report:\n", classification_report(y_test, y_pred))
 cm = confusion_matrix(y_test, y_pred)
 print("Confusion Matrix:\n", cm)
+#这段代码用于评估一个初始模型（在这里是随机森林模型）的分类性能，并打印分类报告和混淆矩阵。
 
 # 可视化混淆矩阵
 plt.figure(figsize=(6, 5))
@@ -98,7 +102,9 @@ plt.title("Confusion Matrix", fontsize=16)
 plt.xlabel("Predicted Label", fontsize=14)
 plt.ylabel("True Label", fontsize=14)
 plt.tight_layout()
+#plt.tight_layout: 自动调整子图参数，以确保子图之间有足够的空间，避免标签或标题重叠。这在绘制复杂图形时非常有用。
 plt.show()
+#这段代码使用 matplotlib 和 seaborn 库来可视化混淆矩阵（cm），使其更直观易读。
 
 # 5. 随机森林超参数调优
 # 通过 GridSearchCV 网格搜索方法寻找最佳超参数组合
