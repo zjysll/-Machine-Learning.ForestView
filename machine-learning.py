@@ -3,7 +3,7 @@
 郑鑫、刘英杰、黄梦甜、祝婧怡构造运营环境，下载nump包、pandas包时用到了Anconda prompt
 郑鑫进行代码复刻时用到了Vs code
 祝婧怡、黄梦甜、刘英杰在编码实现过程中，通过人工智能驱动的方法论，借助AI软件如DeepSeek、python等对多维数据进行建模与特征解析，并采用特征重要性量化分析框架实现驱动因子的动态权重评估。
-
+# 库
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,11 +18,13 @@ from sklearn.preprocessing import StandardScaler
 
 # 1. 数据加载与预处理
 # 载入乳腺癌数据集，该数据集包含 569 个样本，每个样本有 30 个特征和二分类标签（良性/恶性）
+# 其中load_breast_cancer()是加载乳腺癌数据集
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
 
 # 输出数据集基本信息
+# 相应代码如下：
 print("数据集特征形状: ", X.shape)
 print("数据集标签分布:\n", y.value_counts())
 
@@ -92,6 +94,7 @@ param_grid = {
     'min_samples_leaf': [1, 2, 4],
     'bootstrap': [True, False]
 }
+#这段代码定义了一个参数网格，用于在超参数调优过程中尝试不同的超参数组合，以找到最佳的模型性能。n_estimators 和 max_depth 的组合可以控制模型的复杂度。min_samples_split 和 min_samples_leaf 的组合可以控制树的分裂严格程度。bootstrap 决定了树的构建方式。这些参数的组合会影响模型的性能和计算成本。通过工具可以自动尝试所有可能的组合，找到最优的超参数。
 
 # 采用 5 折交叉验证
 grid_search = GridSearchCV(estimator=RandomForestClassifier(random_state=42),
@@ -100,9 +103,10 @@ grid_search = GridSearchCV(estimator=RandomForestClassifier(random_state=42),
                            n_jobs=-1,
                            verbose=1,
                            scoring='accuracy')
-
+#使用 GridSearchCV 对 RandomForestClassifier 模型进行超参数调优，遍历 param_grid 中的所有超参数组合，使用 5 折交叉验证评估每组超参数的性能，并行计算以加速调优过程，输出日志信息以便跟踪进度。最终选择使准确率（accuracy）最高的超参数组合。
 # 训练调优
 grid_search.fit(X_train, y_train)
+#是启动超参数调优和模型训练的核心代码。它通过交叉验证和穷举搜索找到最佳超参数组合，并训练出最终的模型。通过这种方式，可以显著提升模型的性能和泛化能力。
 
 # 输出最佳超参数及最佳得分
 print("\nBest Parameters:", grid_search.best_params_)
@@ -112,11 +116,13 @@ print("Best CV Accuracy: {:.4f}".format(grid_search.best_score_))
 best_rf = grid_search.best_estimator_
 best_rf.fit(X_train, y_train)
 y_pred_best = best_rf.predict(X_test)
+#利用网格搜索找到最佳的随机森林模型，并使用该模型对测试数据进行预测。通过合理地设置参数网格和评估指标，可以有效地优化模型的性能。
 
 # 输出优化后模型的分类报告和混淆矩阵
 print("\nOptimized Model Classification Report:\n", classification_report(y_test, y_pred_best))
 cm_best = confusion_matrix(y_test, y_pred_best)
 print("Optimized Confusion Matrix:\n", cm_best)
+#这段代码用于在分类任务中评估机器学习模型的性能。它输出了分类报告（classification report）和混淆矩阵（confusion matrix），这些是常用的评估指标，用于了解模型在测试数据上的表现。
 
 # 可视化优化后模型的混淆矩阵
 plt.figure(figsize=(6, 5))
@@ -126,6 +132,7 @@ plt.xlabel("Predicted Label", fontsize=14)
 plt.ylabel("True Label", fontsize=14)
 plt.tight_layout()
 plt.show()
+#使用了 matplotlib 和 seaborn 库来可视化混淆矩阵（cm_best），使其更直观易读。plt.tight_layout: 自动调整子图参数，以确保子图之间有足够的空间，避免标签或标题重叠。这在绘制复杂图形时非常有用。
 
 # 7. 模型的重要性分析（Feature Importance）
 # 随机森林模型可以计算各个特征的重要性，下面绘制特征重要性图，帮助理解哪些特征对分类任务贡献最大
