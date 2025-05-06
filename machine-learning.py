@@ -149,7 +149,6 @@ plt.ylabel("Feature", fontsize=14)
 plt.tight_layout()
 plt.show()
 
-
 # 8. ROC 曲线与 AUC 分数评估
 # 计算 ROC 曲线，并绘制 ROC 曲线图，评估模型分类效果
 y_proba = best_rf.predict_proba(X_test)[:, 1]  # 获取正例概率
@@ -174,13 +173,18 @@ plt.ylabel("True Positive Rate", fontsize=14)
 plt.legend(loc="lower right")
 plt.tight_layout()
 plt.show()
-
+#ROC曲线（橙色实线）：横轴（FPR）：负类样本被错误分类的比例（越小越好）；纵轴（TPR）：正类样本被正确分类的比例（越大越好）
+#曲线越靠近左上角，模型性能越好；对角线（蓝色虚线）；表示随机猜测模型的性能（AUC=0.5），作为基准线；AUC值：显示在图例中（例如area = 0.9831），直接量化模型性能
+#模型性能优秀：AUC值为0.9831，远高于随机猜测（0.5），接近完美分类（1.0）；说明模型能够有效区分正负类样本
+#ROC曲线的实际意义：如果希望减少假阳性（如医疗诊断中避免误诊），可选择高阈值；如果希望捕获更多正类（如垃圾邮件检测），可选择低阈值
+#适用场景：当数据存在类别不平衡时，AUC比准确率（Accuracy）更能反映模型性能
 
 # 9. 交叉验证与模型稳定性评估
 # 采用交叉验证进一步评估模型的稳定性和鲁棒性
 cv_scores = cross_val_score(best_rf, X_scaled, y, cv=10, scoring='accuracy')
 print("\nCross-validation Accuracy Scores:\n", cv_scores)
 print("Mean CV Accuracy: {:.4f}".format(np.mean(cv_scores)))
+#作用：使用10折交叉验证评估模型的泛化性能；best_rf：已通过调参优化的随机森林模型；X_scaled：标准化后的特征数据；Y：目标变量（标签）；cv=10：将数据分为10个子集，依次用其中9个训练、1个测试；scoring='accuracy'：以分类准确率作为评估指标
 
 # 可视化交叉验证结果
 plt.figure(figsize=(10, 6))
@@ -193,4 +197,6 @@ plt.ylim(0.90, 1.00)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+#可视化目的：观察模型在不同数据子集上的稳定性；发现潜在问题（如第2折准确率显著下降）
+#图形特征：横轴为折数（1到10），纵轴为准确率（范围限制在0.9~1.0）；折线图 + 圆形标记 + 虚线，颜色为青色；网格线辅助观察波动
 
