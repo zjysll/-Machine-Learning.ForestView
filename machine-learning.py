@@ -141,20 +141,28 @@ plt.xlabel("Importance", fontsize=14)
 plt.ylabel("Feature", fontsize=14)
 plt.tight_layout()
 plt.show()
+#创建一个新的图形窗口，设置画布尺寸为宽12英寸、高8英寸。确保图表足够大，避免特征名称重叠，提升可读性。
+#X轴数据为排序后的特征重要性值（数值型）；Y轴数据为对应的特征名称（标签型）；使用蓝-绿-黄渐变配色方案，美观且色盲友好
+#设置图表标题为“Feature Importance”，字体大小16。 明确图表主题，标题通常加粗且略大于其他文本。
+#设置X轴标签为“Importance”，字体大小14。 说明X轴度量的是特征重要性数值（如基尼重要性或SHAP值）。
+#设置Y轴标签为“Feature”，字体大小14。 标明Y轴条目为特征名称（如“年龄”“收入”等）。
+#自动调整子图间距，避免文字截断或重叠。 在特征数量较多时尤其重要，确保图表元素完整显示。
+#渲染并显示图形。 在Jupyter等交互环境中需此命令才会输出图表。 
+
 
 # 8. ROC 曲线与 AUC 分数评估
 # 计算 ROC 曲线，并绘制 ROC 曲线图，评估模型分类效果
 y_proba = best_rf.predict_proba(X_test)[:, 1]  # 获取正例概率
+fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+roc_auc = auc(fpr, tpr)
+print("\nOptimized Model ROC AUC: {:.4f}".format(roc_auc))
 #作用：获取测试集中每个样本属于正类（标签为1）的概率
 #predict_proba() 返回一个二维数组，每行对应一个样本，列表示属于类别0和1的概率
 #[:, 1] 提取所有行（样本）的第二列，即预测为正类的概率
 #意义：ROC曲线的绘制需要基于概率值，而非直接预测的类别标签
-fpr, tpr, thresholds = roc_curve(y_test, y_proba)
 #输入：y_test：测试集的真实标签（0或1）；y_proba：模型预测的正类概率
 #输出：fpr（False Positive Rate）：假阳性率（误判负类为正类的比例）；tpr（True Positive Rate）：真阳性率（正确识别正类的比例，即召回率）；thresholds：生成不同FPR/TPR时使用的概率阈值（从高到低排序）
 #原理：通过动态调整分类阈值（默认0.5），计算不同阈值下的FPR和TPR
-roc_auc = auc(fpr, tpr)
-print("\nOptimized Model ROC AUC: {:.4f}".format(roc_auc))
 
 # 可视化 ROC 曲线
 plt.figure(figsize=(8, 6))
