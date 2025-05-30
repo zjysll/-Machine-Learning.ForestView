@@ -5,25 +5,25 @@
 祝婧怡、黄梦甜、刘英杰在编码实现过程中，通过人工智能驱动的方法论，借助AI软件如DeepSeek、python等对多维数据进行建模与特征解析，并采用特征重要性量化分析框架实现驱动因子的动态权重评估。
 # 库
 import numpy as np
+#导入 NumPy 库（用于科学计算），并简写为 np以提供高效的数组（ndarray）操作、数学函数、线性代数等
 import pandas as pd
+#导入 Pandas 库（用于数据分析），并简写为 pd以提供 DataFrame（类似Excel表格的数据结构），支持数据清洗、统计分析等
 import matplotlib.pyplot as plt
+#导入 Matplotlib 的绘图模块，并简写为 plt以基础绘图库，可生成折线图、散点图、直方图等
 import seaborn as sns
-导入 NumPy 库（用于科学计算），并简写为 np以提供高效的数组（ndarray）操作、数学函数、线性代数等
-导入 Pandas 库（用于数据分析），并简写为 pd以提供 DataFrame（类似Excel表格的数据结构），支持数据清洗、统计分析等
-导入 Matplotlib 的绘图模块，并简写为 plt以基础绘图库，可生成折线图、散点图、直方图等
-导入 Seaborn 库（基于Matplotlib），并简写为 sns以提供更美观的统计图表（如热力图、箱线图），简化复杂可视化
+#导入 Seaborn 库（基于Matplotlib），并简写为 sns以提供更美观的统计图表（如热力图、箱线图），简化复杂可视化
 
+#这段代码导入了 scikit-learn（sklearn） 库中的多个模块和函数，主要用于 机器学习建模、数据预处理、模型评估 等任务。以下是逐行解释：
 from sklearn.datasets import load_breast_cancer
+#从 sklearn.datasets 加载 乳腺癌数据集（Breast Cancer Wisconsin Dataset），数据集内容包含肿瘤特征（如半径、纹理等）和对应的标签（良性 0 / 恶性 1）
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+#train_test_split：将数据集随机划分为训练集 和测试集，GridSearchCV：通过网格搜索进行超参数调优（穷举所有参数组合，选择最佳模型），cross_val_score：使用 交叉验证 评估模型性能（如准确率）
 from sklearn.ensemble import RandomForestClassifier
+#导入随机森林算法
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc, roc_auc_score
+#confusion_matrix：生成混淆矩阵（显示真阳性、假阳性等分类结果），classification_report：输出分类报告（精确度、召回率、F1值等），roc_curve 和 auc：绘制ROC曲线并计算曲线下面积（AUC），评估模型区分能力，roc_auc_score：直接计算AUC得分（值越接近1，模型越好）。
 from sklearn.preprocessing import StandardScaler
-这段代码导入了 scikit-learn（sklearn） 库中的多个模块和函数，主要用于 机器学习建模、数据预处理、模型评估 等任务。以下是逐行解释：
-从 sklearn.datasets 加载 乳腺癌数据集（Breast Cancer Wisconsin Dataset），数据集内容包含肿瘤特征（如半径、纹理等）和对应的标签（良性 0 / 恶性 1）
-train_test_split：将数据集随机划分为训练集 和测试集，GridSearchCV：通过网格搜索进行超参数调优（穷举所有参数组合，选择最佳模型），cross_val_score：使用 交叉验证 评估模型性能（如准确率）
-导入随机森林算法
-confusion_matrix：生成混淆矩阵（显示真阳性、假阳性等分类结果），classification_report：输出分类报告（精确度、召回率、F1值等），roc_curve 和 auc：绘制ROC曲线并计算曲线下面积（AUC），评估模型区分能力，roc_auc_score：直接计算AUC得分（值越接近1，模型越好）。
-对数据进行 标准化（均值为0，方差为1），提升模型稳定性
+#对数据进行标准化
 
 
 # 1. 数据加载与预处理
@@ -32,59 +32,64 @@ confusion_matrix：生成混淆矩阵（显示真阳性、假阳性等分类结�
 data = load_breast_cancer()
 X = pd.DataFrame(data.data, columns=data.feature_names)
 y = pd.Series(data.target)
-这段代码主要用于加载和预处理Scikit-learn内置的乳腺癌数据集，以下是逐行解释：
-加载Scikit-learn内置的威斯康星乳腺癌诊断数据集
-将特征数据转换为Pandas DataFrame
-将目标变量转换为Pandas Series
+#加载Scikit-learn内置的威斯康星乳腺癌诊断数据集，将特征数据转换为Pandas DataFrame，将目标变量转换为Pandas Series
 
 # 输出数据集基本信息
 # 相应代码如下：
 print("数据集特征形状: ", X.shape)
 print("数据集标签分布:\n", y.value_counts())
-
+#X.shape表示输出特征数据 X 的形状，通常是一个二维数组，表示有多少样本和特征，y.value_counts()表示输出标签 y 中各类别的数量分布（适用于分类问题）。
 
 # 数据预处理：标准化特征数据
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
+#目的是消除特征之间量纲的差异，使模型更稳定、收敛更快，其中StandardScaler() 是来自 sklearn.preprocessing 的标准化工具，fit_transform(X)中fit是用来计算每个特征的均值和标准差，transform是将每个特征转换为标准正态分布（均值为0，标准差为1）
 
 # 将标准化后的数据转换为DataFrame便于后续处理和可视化
 X_scaled = pd.DataFrame(X_scaled, columns=data.feature_names)
+#X_scaled 是一个标准化后的 NumPy 数组。将其转换成 pandas.DataFrame，并指定列名为原始特征名称（data.feature_names），方便后续分析、可视化和处理，比如用 DataFrame 自带的 describe()、corr() 等方法。
 
 # 2. 数据探索性分析（Exploratory Data Analysis, EDA）
 # 分析数据集的基本统计量、相关性和分布情况，帮助我们更好地理解数据
 print("\n数据集描述统计信息:\n", X.describe())
+#X.describe()的含义是输出原始特征数据的基本统计信息，如均值、标准差、最大值、最小值、四分位数等，有助于了解各特征的分布情况，比如是否偏态、是否有异常值等
 
 # 可视化数据特征间的相关性热力图
 plt.figure(figsize=(14, 10))
+#创建绘图画布:设置图形大小为14英寸(宽)×10英寸(高),为后续绘图准备足够大的画布空间
 corr = X.corr()
+#计算特征相关系数矩阵:使用Pearson相关系数（默认）,取值范围：[-1, 1],1表示完全正相关，-1表示完全负相关,输出结构：30×30的对称矩阵（对应30个特征）
 sns.heatmap(corr, annot=True, fmt=".2f", cmap="RdBu_r")
+#绘制热力图:annot=True 作用为显示数值，取值默认False；fmt=".2f" 作用为数值格式，取值保留两位小数；cmap="RdBu_r" 作用为颜色映射，取值红-蓝渐变（_r表示反转）
 plt.title("Feature Correlation Heatmap", fontsize=16)
 plt.xlabel("X Axis", fontsize=14)
 plt.ylabel("Y Axis", fontsize=14)
+#添加图表修饰，设置标题字号16，坐标轴标签字号14，实际分析时可替换为更有意义的轴标签
 plt.tight_layout()
 plt.show()
-这段代码用于绘制乳腺癌数据集中各特征之间的相关性热力图，以下是逐行解释：
-创建绘图画布:设置图形大小为14英寸(宽)×10英寸(高),为后续绘图准备足够大的画布空间
-计算特征相关系数矩阵:使用Pearson相关系数（默认）,取值范围：[-1, 1],1表示完全正相关，-1表示完全负相关,输出结构：30×30的对称矩阵（对应30个特征）
-绘制热力图:annot=True 作用为显示数值，取值默认False；fmt=".2f" 作用为数值格式，取值保留两位小数；cmap="RdBu_r" 作用为颜色映射，取值红-蓝渐变（_r表示反转）
-第4/5/6行用来添加图表修饰，设置标题字号16，坐标轴标签字号14，实际分析时可替换为更有意义的轴标签
-第7/8行用来布局优化，tight_layout用来自动调整子图参数避免标签重叠，show用来显示图形（在Jupyter等环境中可省略）
+#布局优化，tight_layout用来自动调整子图参数避免标签重叠，show用来显示图形（在Jupyter等环境中可省略）
+
 
 # 可视化标签分布情况：良性与恶性样本比例
 plt.figure(figsize=(6, 4))
+#设置图形大小为6英寸(宽)×4英寸(高)
 sns.countplot(x=y, palette="bright")
+#绘制计数柱状图：x=y表示使用y Series作为x轴数据，palette="bright"表示使用明亮色系
 plt.title("Label Distribution", fontsize=16)
 plt.xlabel("X Axis", fontsize=14)
 plt.ylabel("Y Axis", fontsize=14)
+#图表修饰：设置主标题字号16，坐标轴标签字号14
 plt.xticks([0, 1], ['Malignant', 'Benign'])
 plt.tight_layout()
 plt.show()
+#x轴优化和显示控制
 
 # 3. 划分训练集和测试集
 # 为了评估模型的泛化能力，将数据集随机分为训练集和测试集，其中测试集占比 30%
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42, stratify=y)
 print("\n训练集样本数: ", X_train.shape[0])
 print("测试集样本数: ", X_test.shape[0])
+#这段代码使用train_test_split函数将标准化后的特征数据X_scaled和标签y划分为训练集和测试集，其中test_size=0.3表示30%数据作为测试集，random_state=42确保每次划分结果一致，stratify=y保证训练集和测试集中类别比例与原始数据相同。最后两行代码分别打印出训练集和测试集的样本数量，用于验证数据划分结果。这种划分方式是机器学习中准备数据的标准流程，既保证了模型评估的可靠性，又维持了原始数据的分布特性。
 
 # 4. 构建基础随机森林分类器
 # 初步构建随机森林模型，并进行训练和预测
