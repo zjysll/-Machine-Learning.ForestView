@@ -166,6 +166,49 @@ plt.ylabel('Loss')
 plt.show()
 #绘制训练损失随 epoch 变化的折线图，用于观察模型训练效果。
 
+5.随机森林回归器
+ from sklearn.ensemble import RandomForestRegressor
+# 将数据转换为2D格式以适应随机森林
+X_train_rf = X_train.reshape(X_train.shape[0], -1) X_test_rf = X_test.reshape(X_test.shape[0], -1)
+y_train_rf = y_train.reshape(y_train.shape[0], -1)
+y_test_rf = y_test.reshape(y_test.shape[0], -1)
+# 初始化随机森林模型
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+# 训练随机森林模型
+rf_model.fit(X_train_rf, y_train_rf)
+# 预测
+rf_predictions = rf_model.predict(X_test_rf)
+
+6.评估模型性能
+: from sklearn.metrics import mean_squared_error, mean_absolute_error
+model.eval()
+with torch.no_grad():
+# Transformer模型预测
+transformer_outputs = model(X_test_tensor.permute(1, 0, 2)).permute(1, 0, 2) transformer_outputs = transformer_outputs.numpy().reshape(y_test_rf.shape)   transformer_mse = mean_squared_error(y_test_rf, transformer_outputs)
+transformer_mae = mean_absolute_error(y_test_rf, transformer_outputs) print(f'Transformer MSE: {transformer_mse}, MAE: {transformer_mae}')
+# 随机森林模型评估
+rf_mse = mean_squared_error(y_test_rf, rf_predictions)
+rf_mae = mean_absolute_error(y_test_rf, rf_predictions)
+print(f'Random Forest MSE: {rf_mse}, MAE: {rf_mae}')
+Transformer MSE: 0.891311763629347, MAE: 0.7707247728399157
+Random Forest MSE: 0.19194779737218376, MAE: 0.20440593091692713 
+
+7.加权平均融合
+alpha = 0.5  # 可以调整这个权重
+ensemble_predictions = alpha * transformer_outputs + (1 - alpha) * rf_predictions ensemble_mse = mean_squared_error(y_test_rf, ensemble_predictions)
+ensemble_mae 〓 mean_absolute_error(y_test_rf, ensemble_predictions)
+print(f'Ensemble Model MSE: {ensemble_mse}, MAE: {ensemble_mae}')
+
+8.真实与预测值对比图
+# 可视化融合模型预测结果与真实值的对比
+plt.figure(figsize〓(14, 8))
+plt.plot(data[ 'Time'][len(data[ 'Time']) -  len(y_test):], y_test_rf[:, 0], label〓 'True Sine')
+plt.plot(data[ 'Time'][len(data[ 'Time']) -  len(y_test):], ensemble_predictions[:, 0], label〓 'Predicted Sine (Ensemble)') plt.title( 'True vs Predicted Values (Ensemble Model)')
+plt.xlabel( 'Time')
+plt.ylabel( 'Sine Value')
+plt.legend()
+plt.show()
+
 9.随机森林特征重要性
 importances = rf_model.feature_importances_
 #rf_model 是训练好的随机森林模型，.feature_importances_ 是随机森林提供的属性，表示每个特征对模型预测的贡献（按 Gini 或信息增益分数计算）。
