@@ -2,6 +2,54 @@ Transformer结合随机森林时序预测，由于数据集不公开，自己的
 因此选择随机生成数据集，对两个模型结合进行探索，对相应的我以后需要用到的数据分析方法，以及相应的特征图。
 用Deeseek和小浣熊AI进行指令生成代码，进行我所需图片的相应分析进行初步探索。所有内容均是原创
 
+1. 数据集生成以及预处理
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+# 设置随机种子以保证结果可重复
+np.random.seed(42)
+# 生成时间序列数据
+time_steps = np.arange(0, 100, 0.1)
+#从0开始，到100结束，不包括100，步长为0.1
+sine_wave = np.sin(time_steps)
+#计算time_steps中每个时间点的正弦值
+cosine_wave = np.cos(time_steps)
+#计算time_steps中每个时间点的余弦值
+noisy_signal = np.random.normal(0, 1, len(time_steps)) + 0.5 * np.sin(2 * time_steps)
+#这行代码生成了一个长度为 1000 的正态分布随机数数组，表示噪声
+
+# 创建数据集
+data = pd.DataFrame({
+'Time': time_steps,
+'Sine': sine_wave,
+'Cosine': cosine_wave,
+'Noisy': noisy_signal
+})
+
+# 数据标准化
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(data[[ 'Sine', 'Cosine', 'Noisy']])
+scaled_data = pd.DataFrame(scaled_data, columns=[ 'Sine', 'Cosine', 'Noisy']) scaled_data[ 'Time'] = data[ 'Time']
+
+# 可视化标准化后的数据
+plt.figure(figsize=(14, 8))
+# 设置绘图窗口大小为宽14英寸、高8英寸
+plt.plot(scaled_data[ 'Time'], scaled_data[ 'Sine'], label= 'Normalized Sine Wave')
+# 绘制标准化后的正弦波
+plt.plot(scaled_data[ 'Time'], scaled_data[ 'Cosine'], label= 'Normalized Cosine Wave')
+# 绘制标准化后的余弦波
+plt.plot(scaled_data[ 'Time'], scaled_data[ 'Noisy'], label= 'Normalized Noisy Signal') 
+# 绘制标准化后的带噪声信号
+plt.title( 'Normalized Multivariate Time Series Data')
+# 添加图表标题
+plt.xlabel( 'Time')
+# 设置x轴标签为“Time”
+plt.ylabel( 'Normalized Value')
+# 设置y轴标签为“Normalized Value”
+plt.legend() 
+plt.show()
+
 2. 数据集拆分与窗口化
 from sklearn.model_selection import train_test_split
 #导入用于将数据集拆分为训练集和测试集的函数
@@ -145,3 +193,53 @@ plt.xlim([-1, X_train_rf.shape[1]])
 #设置 x 轴显示范围，-1 到特征数，防止边界数据被截断。
 plt.show()
 #显示图像。
+
+10.融合模型误差分析
+errors = y_test_rf -  ensemble_predictions
+#计算误差值
+plt.figure(figsize=(10, 6))
+# 设置绘图窗口大小为宽10英寸、高6英寸
+plt.hist(errors.flatten(), bins=50, alpha=0.7, color='blue') 
+# 绘制误差分布的直方图
+plt.title( 'Error Distribution of Ensemble Model')
+# 添加图表标题
+plt.xlabel( 'Error')
+# 设置x轴标签为“Error”
+plt.ylabel('Frequency') 
+# 设置y轴标签为“Frequency”
+plt.show()
+
+11.残差图
+# 计算残差
+residuals = y_test_rf -  ensemble_predictions
+# 绘制残差图
+plt.figure(figsize=(10, 6))
+# 设置绘图窗口大小为宽10英寸、高6英寸
+plt.scatter(ensemble_predictions, residuals, alpha=0.5) 
+# 绘制散点图，展示预测值与残差的关系
+plt.axhline(y=0, color= 'r', linestyle='--')
+# 添加一条水平线，表示残差为 0 的位置
+plt.title( 'Residual Plot')
+# 添加图表标题
+plt.xlabel( 'Predicted Values')
+# 设置 x 轴标签为“Predicted Values”
+plt.ylabel( 'Residuals')
+# 设置 y 轴标签为“Residuals”
+plt.show()
+
+12.预测Vs真实值
+# 绘制预测 vs 真实值图
+plt.figure(figsize=(10, 6))
+# 设置绘图窗口大小为宽10英寸、高6英寸
+plt.scatter(y_test_rf, ensemble_predictions, alpha=0.5)
+# 绘制散点图，展示真实值与预测值的关系
+plt.plot([y_test_rf.min(), y_test_rf.max()], [y_test_rf.min(), y_test_rf.max()], 'k-- ', lw=2) 
+# 添加一条对角线，表示完美预测的情况
+plt.title( 'Predicted vs Actual Plot')
+# 添加图表标题
+plt.xlabel( 'Actual Values')
+# 设置 x 轴标签为“Actual Values”
+plt.ylabel( 'Predicted Values')
+# 设置 y 轴标签为“Predicted Values”
+plt.show()
+
